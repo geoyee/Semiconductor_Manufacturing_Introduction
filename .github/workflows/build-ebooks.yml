@@ -2,14 +2,14 @@ name: Build Ebooks (EPUB & PDF)
 
 on:
   push:
-    branches: [ feature-ebook ]
+    branches: [feature-ebook]
     paths:
       # - 'en/**'
       # - 'zh-TW/**'
-      - 'zh-CN/**'
+      - "zh-CN/**"
       # - 'ja/**'
       # - 'ko/**'
-      - '.github/workflows/build-ebooks.yml'
+      - ".github/workflows/build-ebooks.yml"
   workflow_dispatch:
 
 jobs:
@@ -37,18 +37,13 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install CJK fonts
         run: |
           sudo apt-get update
           sudo apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra fontconfig
           sudo fc-cache -fv
-
-      - name: Verify CJK fonts
-        run: |
-          fc-list :lang=zh | head -20
-          fc-match "Noto Sans CJK SC"
 
       - name: Install mdbindery and tools
         run: |
