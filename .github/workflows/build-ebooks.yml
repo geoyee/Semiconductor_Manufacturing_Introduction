@@ -42,7 +42,6 @@ jobs:
       - name: Install mdbindery with PDF support
         run: |
           pip install "mdbindery[pdf]"
-          python -m playwright install --with-deps chromium
 
       - name: Build EPUB and PDF for ${{ matrix.lang_label }}
         working-directory: ${{ matrix.lang_dir }}
