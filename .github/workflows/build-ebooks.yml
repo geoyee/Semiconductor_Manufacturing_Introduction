@@ -1,0 +1,66 @@
+name: Build Ebooks (EPUB & PDF)
+
+on:
+  push:
+    branches: [ feature-ebook ]
+    paths:
+      # - 'en/**'
+      # - 'zh-TW/**'
+      - 'zh-CN/**'
+      # - 'ja/**'
+      # - 'ko/**'
+      - '.github/workflows/build-ebooks.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # - lang_dir: en
+          #   lang_label: English
+          # - lang_dir: zh-TW
+          #   lang_label: 繁體中文
+          - lang_dir: zh-CN
+            lang_label: 简体中文
+          # - lang_dir: ja
+          #   lang_label: 日本語
+          # - lang_dir: ko
+          #   lang_label: 한국어
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install mdbindery with PDF support
+        run: |
+          pip install "mdbindery[pdf]"
+          python -m playwright install --with-deps chromium
+
+      - name: Build EPUB and PDF for ${{ matrix.lang_label }}
+        working-directory: ${{ matrix.lang_dir }}
+        run: |
+          echo "::group::Checking ${{ matrix.lang_dir }}"
+          mdbindery check .
+          echo "::endgroup::"
+          echo "::group::Building EPUB"
+          mdbindery build . --format epub
+          echo "::endgroup::"
+          echo "::group::Building PDF"
+          mdbindery build . --format pdf
+          echo "::endgroup::"
+
+      - name: Upload ebooks (${{ matrix.lang_label }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: ebooks-${{ matrix.lang_dir }}
+          path: ${{ matrix.lang_dir }}/dist/
+          if-no-files-found: error
+          retention-days: 30
