@@ -14,17 +14,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         include:
           # - lang_dir: en
           #   lang_label: English
-          # - lang_dir: zh-TW
-          #   lang_label: 繁體中文
           - lang_dir: zh-CN
             lang_label: 简体中文
+          # - lang_dir: zh-TW
+          #   lang_label: 繁體中文
           # - lang_dir: ja
           #   lang_label: 日本語
           # - lang_dir: ko
@@ -44,17 +44,26 @@ jobs:
           pip install "mdbindery[pdf]"
           mdbindery install-tools
 
+      - name: Create Puppeteer config to disable sandbox
+        run: |
+          mkdir -p ~/.config/puppeteer
+          cat > ~/.config/puppeteer/puppeteer-config.json <<'EOF'
+          {
+            "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+          }
+          EOF
+
       - name: Build EPUB and PDF for ${{ matrix.lang_label }}
         working-directory: ${{ matrix.lang_dir }}
-        env:
-          PUPPETEER_ARGS: "--no-sandbox --disable-setuid-sandbox"
         run: |
           echo "::group::Checking ${{ matrix.lang_dir }}"
           mdbindery check .
           echo "::endgroup::"
+
           echo "::group::Building EPUB"
           mdbindery build . --format epub
           echo "::endgroup::"
+
           echo "::group::Building PDF"
           mdbindery build . --format pdf
           echo "::endgroup::"
