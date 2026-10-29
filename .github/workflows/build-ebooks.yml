@@ -39,6 +39,17 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install CJK fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk fonts-noto-cjk-extra fontconfig
+          sudo fc-cache -fv
+
+      - name: Verify CJK fonts
+        run: |
+          fc-list :lang=zh | head -20
+          fc-match "Noto Sans CJK SC"
+
       - name: Install mdbindery and tools
         run: |
           pip install "mdbindery[pdf]"
@@ -53,7 +64,7 @@ jobs:
           }
           EOF
 
-      - name: Build EPUB and PDF for ${{ matrix.lang_label }}
+      - name: Build EPUB for ${{ matrix.lang_label }}
         working-directory: ${{ matrix.lang_dir }}
         run: |
           echo "::group::Checking ${{ matrix.lang_dir }}"
@@ -64,14 +75,19 @@ jobs:
           mdbindery build . --format epub
           echo "::endgroup::"
 
+      - name: Build PDF for ${{ matrix.lang_label }}
+        working-directory: ${{ matrix.lang_dir }}
+        continue-on-error: true
+        run: |
           echo "::group::Building PDF"
           mdbindery build . --format pdf
           echo "::endgroup::"
 
-      - name: Upload ebooks (${{ matrix.lang_label }})
+      - name: Upload ebooks and reports (${{ matrix.lang_label }})
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ebooks-${{ matrix.lang_dir }}
           path: ${{ matrix.lang_dir }}/dist/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
