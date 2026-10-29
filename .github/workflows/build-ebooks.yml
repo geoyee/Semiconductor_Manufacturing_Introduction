@@ -46,6 +46,8 @@ jobs:
 
       - name: Build EPUB and PDF for ${{ matrix.lang_label }}
         working-directory: ${{ matrix.lang_dir }}
+        env:
+          PUPPETEER_ARGS: "--no-sandbox --disable-setuid-sandbox"
         run: |
           echo "::group::Checking ${{ matrix.lang_dir }}"
           mdbindery check .
