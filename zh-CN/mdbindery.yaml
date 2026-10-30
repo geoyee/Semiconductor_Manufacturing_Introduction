@@ -1,19 +1,19 @@
 # mdbindery configuration: https://github.com/sagol/mdbindery/blob/main/docs/configuration.md
-slug: "半导体制造概论" # names the EPUB file
+slug: "Introduction to Semiconductor Manufacturing" # names the EPUB file
 output_dir: "dist"
 # online copy of the book folder: links to files outside the book point here
 source_url: "https://github.com/geoyee/Semiconductor_Manufacturing_Introduction/blob/feature-ebook/zh-CN/"
 
 metadata:
-  title: "半导体制造概论"
+  title: "Introduction to Semiconductor Manufacturing"
   subtitle: ""
-  authors: ["chenwei810"]
+  authors: [] # "frist name"
   lang: "zh-Hans"
   # identifier: left empty, a permanent urn:uuid is written here on the first build
   identifier:
   date: "git"
   rights: "CC BY-NC-SA 4.0"
-  description: "跟着一片晶圆，走完从沙子到芯片的旅程"
+  description: "Follow one wafer on its journey from sand to chip"
 
 cover:
   image: "" # 1600x2560 JPEG recommended; empty = generated
